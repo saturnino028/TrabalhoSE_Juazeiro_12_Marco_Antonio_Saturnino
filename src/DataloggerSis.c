@@ -385,11 +385,8 @@ void criar_csv_dados_sensor(char *_nome_do_arquivo)
     FRESULT fr;
     UINT bytes_written;
 
-    // Nome do arquivo
-    const char *filename = "dados.csv";
-
     // Abre o arquivo para escrita (cria se não existir, sobrescreve se existir)
-    fr = f_open(&file, filename, FA_WRITE | FA_CREATE_ALWAYS);
+    fr = f_open(&file, _nome_do_arquivo, FA_WRITE | FA_CREATE_ALWAYS);
     if (fr != FR_OK) {
         printf("Erro ao criar arquivo CSV: %d\n", fr);
         return;
