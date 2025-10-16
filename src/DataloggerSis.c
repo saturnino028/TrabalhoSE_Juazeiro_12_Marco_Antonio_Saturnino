@@ -4,9 +4,7 @@
  **/
 
  #include "DataloggerSis.h"
- #include "figuras_ws2812.h"
  #include "prefixos_uteis.h"
- #include "figuras_ssd1306.h"
 
 /********************* Variaveis Globais *********************/
  //Funções da interface do usuário
@@ -18,8 +16,6 @@ volatile uint32_t passado = 0; //Usada para implementar o debouncing
 bool flag_grav_dados = 0;
 
 def_canais_pwm dados;
-
-dados_sensor dados_imp;
 
 char filename[32];
 
@@ -38,10 +34,6 @@ void  InitSistema()
 
     config_pins_gpio(); //Inicia os pinos GPIO
 
-    init_matriz(); //Inicia a matriz de LEDs 5x5 WS2812
-
-    desenhar_fig(open, 10);
-
     slice_b = config_pwm(buz_B, 1*KHz); //Configura um slice para 1KHz
 
     config_i2c_display(&ssd);
@@ -54,9 +46,6 @@ void  InitSistema()
     ssd1306_send_data(&ssd); // Atualiza o display
 
     sleep_ms(1500);
-    ssd1306_fill(&ssd, !cor); // Limpa o display
-    ssd1306_draw_image(&ssd, fig_principal);     
-    ssd1306_send_data(&ssd); // Atualiza o display
 
     uint8_t flag_led = 1;
     for(uint8_t etapa = 0; etapa<6; etapa++)
@@ -82,10 +71,7 @@ void  InitSistema()
     gpio_set_irq_enabled_with_callback(bot_A, GPIO_IRQ_EDGE_FALL, true, &botoes_callback);
     gpio_set_irq_enabled_with_callback(bot_B, GPIO_IRQ_EDGE_FALL, true, &botoes_callback);
 
-    mpu6050_init(); //Inicializa o MPU6050
     verificar_cartao(); //Verifica se a montagem do cartão é bem sucedida
-
-    desenhar_fig(apagado, 10);
 
     campainha(volume_buzzer, 1000,slice_b, buz_B);
 
@@ -406,19 +392,19 @@ void criar_csv_dados_sensor(char *_nome_do_arquivo)
     // Exemplo: escreve 100 linhas de dados
     for (int i = 0; i < 100; i++) 
     {
-        mpu6050_read_raw(dados_imp.aceleracao, dados_imp.giro, &dados_imp.temp);
+       // mpu6050_read_raw(dados_imp.aceleracao, dados_imp.giro, &dados_imp.temp);
         char linha[100];
-        float ax = dados_imp.aceleracao[0] / 16384.0f;
-        float ay = dados_imp.aceleracao[1] / 16384.0f;
-        float az = dados_imp.aceleracao[2] / 16384.0f;
-        float gx = dados_imp.giro[0] / 16384.0f;
-        float gy = dados_imp.giro[1] / 16384.0f;
-        float gz = dados_imp.giro[2] / 16384.0f;
-        float temp = (dados_imp.temp/340.0)+36.53;
+        //float ax = dados_imp.aceleracao[0] / 16384.0f;
+        //float ay = dados_imp.aceleracao[1] / 16384.0f;
+        //float az = dados_imp.aceleracao[2] / 16384.0f;
+        //float gx = dados_imp.giro[0] / 16384.0f;
+        //float gy = dados_imp.giro[1] / 16384.0f;
+        //float gz = dados_imp.giro[2] / 16384.0f;
+        //float temp = (dados_imp.temp/340.0)+36.53;
 
         // Formata a linha como CSV
-        snprintf(linha, sizeof(linha), "%d,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n",
-                 i, ax, ay, az, gx, gy, gz, temp);
+       // snprintf(linha, sizeof(linha), "%d,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n",
+        //         i, ax, ay, az, gx, gy, gz, temp);
 
         // Escreve a linha no arquivo
         fr = f_write(&file, linha, strlen(linha), &bytes_written);

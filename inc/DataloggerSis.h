@@ -19,8 +19,6 @@
 
 #include "pinout.h"
 #include "ssd1306.h"
-#include "mpu6050.h"
-#include "matriz_5x5.h"
 #include "Cartao_FatFS_SPI.h"
 
 /********************* Defines e structs *********************/
@@ -30,12 +28,6 @@ typedef struct
     uint8_t _pin;
 } def_canais_pwm;
 
-typedef struct
-{
-    int16_t aceleracao[3];
-    int16_t giro[3];
-    int16_t temp;
-} dados_sensor;
 
 /********************* Variaveis Globais *********************/
 extern bool flag_grav_dados;
