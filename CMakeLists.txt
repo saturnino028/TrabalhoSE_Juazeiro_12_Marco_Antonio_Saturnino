@@ -36,12 +36,20 @@ pico_sdk_init()
 add_subdirectory(inc/FatFs_SPI)  
 
 # Add executable. Default name is the project name, version 0.1
-add_executable(${PROJECT_NAME} src/main.c src/ssd1306.c src/DataloggerSis.c
-                               src/Cartao_FatFS_SPI.c src/hw_config.c
-                               )
+add_executable(${PROJECT_NAME} src/main.c src/matriz_5x5.c src/ssd1306.c
+                src/DataloggerSis.c src/mpu6050.c src/Cartao_FatFS_SPI.c
+                src/hw_config.c)
 
 pico_set_program_name(${PROJECT_NAME} "DataloggerSis")
 pico_set_program_version(${PROJECT_NAME} "0.1")
+
+# Define o diretório de saída apenas para os arquivos de cabeçalho
+set(PIO_HEADER_OUTPUT_DIR ${CMAKE_CURRENT_LIST_DIR}/inc)
+# Gera o arquivo PIO na pasta especificada apenas para headers
+pico_generate_pio_header(${PROJECT_NAME}
+    ${CMAKE_CURRENT_LIST_DIR}/InterfacePio.pio 
+    OUTPUT_DIR ${PIO_HEADER_OUTPUT_DIR}
+)
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(${PROJECT_NAME} 1)
@@ -51,10 +59,10 @@ pico_enable_stdio_usb(${PROJECT_NAME} 1)
 target_link_libraries(${PROJECT_NAME}
         pico_stdlib
 
+        hardware_pio
         hardware_i2c
         hardware_spi
         hardware_pwm
-        hardware_timer
         hardware_clocks
         
         FatFs_SPI)
@@ -63,6 +71,16 @@ target_link_libraries(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}/inc
 )
+
+# Add any user requested libraries
+target_link_libraries(${PROJECT_NAME} 
+        hardware_spi
+        hardware_i2c
+        hardware_pio
+        hardware_timer
+        hardware_clocks
+        
+        )
 
 pico_add_extra_outputs(${PROJECT_NAME})
 
